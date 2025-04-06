@@ -5,64 +5,85 @@ import { DragDropContext, Droppable } from "@hello-pangea/dnd";
 import { useTheme } from "next-themes";
 import TaskInput from "@/components/TaskInput";
 import TaskList from "@/components/TaskList";
+import Loader from "@/components/Loader";
 import { Sun, Moon } from "lucide-react";
-
-// Interface pour la structure d'une tâche
-interface Task {
-  id: string;
-  text: string;
-  completed: boolean;
-}
+import { todoService, Task } from "@/lib/todo-service";
 
 export default function Home() {
-  // État pour stocker les tâches
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { theme, setTheme } = useTheme();
 
-  // Charger les tâches depuis localStorage au montage du composant
+  // Charger les tâches depuis DynamoDB au montage du composant
   useEffect(() => {
-    const savedTasks = localStorage.getItem("tasks");
-    if (savedTasks) {
-      setTasks(JSON.parse(savedTasks));
-    }
+    const loadTasks = async () => {
+      try {
+        const loadedTasks = await todoService.getAllTasks();
+        setTasks(loadedTasks);
+      } catch (error) {
+        console.error("Erreur lors du chargement des tâches:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadTasks();
   }, []);
 
-  // Sauvegarder les tâches dans localStorage à chaque modification
-  useEffect(() => {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-  }, [tasks]);
-
   // Ajouter une nouvelle tâche
-  const addTask = (text: string) => {
+  const addTask = async (text: string) => {
     const newTask: Task = {
       id: Date.now().toString(),
       text,
       completed: false,
     };
-    setTasks([...tasks, newTask]);
+    try {
+      await todoService.addTask(newTask);
+      setTasks([...tasks, newTask]);
+    } catch (error) {
+      console.error("Erreur lors de l'ajout de la tâche:", error);
+    }
   };
 
   // Supprimer une tâche
-  const deleteTask = (id: string) => {
-    setTasks(tasks.filter((task) => task.id !== id));
+  const deleteTask = async (id: string) => {
+    try {
+      await todoService.deleteTask(id);
+      setTasks(tasks.filter((task) => task.id !== id));
+    } catch (error) {
+      console.error("Erreur lors de la suppression de la tâche:", error);
+    }
   };
 
   // Marquer une tâche comme complétée
-  const toggleTask = (id: string) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
+  const toggleTask = async (id: string) => {
+    const updatedTasks = tasks.map((task) =>
+      task.id === id ? { ...task, completed: !task.completed } : task
     );
+    try {
+      const taskToUpdate = updatedTasks.find((task) => task.id === id);
+      if (taskToUpdate) {
+        await todoService.updateTask(taskToUpdate);
+        setTasks(updatedTasks);
+      }
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour de la tâche:", error);
+    }
   };
 
   // Modifier le texte d'une tâche
-  const editTask = (id: string, newText: string) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, text: newText } : task
-      )
+  const editTask = async (id: string, newText: string) => {
+    const updatedTasks = tasks.map((task) =>
+      task.id === id ? { ...task, text: newText } : task
     );
+    try {
+      const taskToUpdate = updatedTasks.find((task) => task.id === id);
+      if (taskToUpdate) {
+        await todoService.updateTask(taskToUpdate);
+        setTasks(updatedTasks);
+      }
+    } catch (error) {
+      console.error("Erreur lors de la modification de la tâche:", error);
+    }
   };
 
   // Gérer le drag and drop
@@ -75,6 +96,14 @@ export default function Home() {
 
     setTasks(items);
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader size={48} />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary transition-colors duration-500">
