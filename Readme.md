@@ -10,6 +10,6 @@ npm run start
 **http://localhost/test**
 
 # Fichiers utiles
-**.env.sample**
-**tsconfig.lambda.json**
-**lambdas/***
+- **.env.sample**
+- **tsconfig.lambda.json**
+- **lambdas/***
