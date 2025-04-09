@@ -106,10 +106,10 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary transition-colors duration-500">
+    <div className="min-h-screen bg-gradient-to-b from-background to-secondary transition-colors duration-500 bg">
       <div className="max-w-3xl mx-auto p-6">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-primary">Ma Liste de Tâches</h1>
+        <div className="flex justify-between items-center mb-8 bg-blue-500 rounded-lg shadow-lg p-4">
+          <h1 className="text-4xl font-bold text-primary text-white">Ma Liste de Tâches</h1>
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             className="p-2 rounded-full hover:bg-secondary transition-colors"
