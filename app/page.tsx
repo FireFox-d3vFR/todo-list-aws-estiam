@@ -79,7 +79,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary transition-colors duration-500">
       <div className="max-w-3xl mx-auto p-6">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-8" style={{ background: "#FF7900" }}>
           <h1 className="text-4xl font-bold text-primary">Ma Liste de Tâches</h1>
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
