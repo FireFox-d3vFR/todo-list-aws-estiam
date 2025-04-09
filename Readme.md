@@ -9,5 +9,7 @@ npm run start
 # Page vérification de la connexion à DynamoDB
 **http://localhost/test**
 
-# Fichier utile
+# Fichiers utiles
 **.env.sample**
+**tsconfig.lambda.json**
+**lambdas/***
