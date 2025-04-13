@@ -23,7 +23,6 @@ export default function Home() {
       const loadTasks = async () => {
         setIsLoading(true); // Remettre isLoading à true pour le chargement des tâches
         try {
-          // TODO: Idéalement, récupérer les tâches spécifiques à l'utilisateur authentifié
           // Pour l'instant, récupère toutes les tâches
           const loadedTasks = await todoService.getAllTasks();
           setTasks(loadedTasks);
